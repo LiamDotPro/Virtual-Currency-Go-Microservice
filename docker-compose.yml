@@ -1,0 +1,44 @@
+version: '3'
+services:
+
+  api:
+    restart: always
+    build:
+      context: . # Use an image built from the specified dockerfile in the current directory.
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    networks:
+      - backend
+    ports:
+      - "5000:5000"
+
+  postgres:
+    image: "postgres:latest"
+    ports:
+      - "5432:5432"
+    container_name: virtual-currency-postgres
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=currencies
+    volumes:
+      - "./pgvolume:/pgdata"
+    logging:
+      driver: "none"
+    networks:
+      - backend
+
+  pgadmin:
+    image: "dpage/pgadmin4:latest"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=test@test.com
+      - PGADMIN_DEFAULT_PASSWORD=yoursecurepassword
+    ports:
+      - "4000:80"
+    logging:
+      driver: "none"
+    networks:
+      - backend
+
+networks:
+  backend:
